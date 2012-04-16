@@ -80,6 +80,7 @@ BOARD_USE_USB_MASS_STORAGE_SWITCH := true
 BOARD_MASS_STORAGE_FILE_PATH := "/sys/devices/platform/usb_mass_storage/lun0/file"
 TARGET_USE_CUSTOM_LUN_FILE_PATH := "/sys/devices/platform/usb_mass_storage/lun0/file"
 BOARD_MTP_DEVICE := "/dev/mtp"
+BOARD_VOLD_EMMC_SHARES_DEV_MAJOR := true
 
 # Build options
 BOARD_BOOTIMAGE_MAX_SIZE := $(call image-size-from-data-size,0x00280000)
@@ -154,8 +155,15 @@ ifeq ($(BOARD_DEFY_MODEL),DEFY_PLUS)
 BOARD_USE_CID_ROTATE_34 := true
 endif
 
-# If kernel source is present in repo, here is the location
-TARGET_KERNEL_SOURCE := $(ANDROID_BUILD_TOP)/kernel/moto/mb525
-TARGET_KERNEL_CONFIG := mapphone_mb525
+# If kernel sources are present in repo, here is the location
+#TARGET_KERNEL_SOURCE := $(ANDROID_BUILD_TOP)/kernel/moto/mb525
+#TARGET_KERNEL_CONFIG := mapphone_mb525_defconfig
+
+# Beware: set only prebuilt OR source+config
+TARGET_PREBUILT_KERNEL := $(ANDROID_BUILD_TOP)/device/motorola/jordan/kernel
+
+# Extra : to build external modules sources
+MOTO_KERNEL_SOURCE := $(ANDROID_BUILD_TOP)/kernel/moto/mb525
+MOTO_KERNEL_CONFIG := mapphone_mb525_defconfig
 TARGET_KERNEL_MODULES_EXT := $(ANDROID_BUILD_TOP)/device/motorola/jordan/modules
 

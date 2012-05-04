@@ -15,7 +15,9 @@
 #
 
 TARGET_BOOTANIMATION_NAME := vertical-480x854
+DEVICE_PACKAGE_OVERLAYS += device/motorola/jordan/overlay_cm
 
+# Inherit some common CM9 stuff.
 $(call inherit-product-if-exists, vendor/cm/config/common_full_phone.mk)
 $(call inherit-product-if-exists, vendor/cm/config/gsm.mk)
 

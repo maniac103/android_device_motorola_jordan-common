@@ -602,17 +602,11 @@ void CameraHAL_FixupParams(struct camera_device * device, CameraParameters &sett
 
 inline void destroyOverlay(legacy_camera_device *lcdev) {
     LOGV("%s\n", __FUNCTION__);
-    if (lcdev->overlay != NULL && lcdev->hwif != NULL) {
-        lcdev->hwif->setOverlay(false);
-        lcdev->overlay = NULL;
-    }
-}
-
-inline void clearHardwareIntf(legacy_camera_device *lcdev) {
-    LOGV("%s\n", __FUNCTION__);
-    if (lcdev->hwif != NULL) {
-        lcdev->hwif.clear();
-        lcdev->hwif = NULL;
+    if (lcdev->overlay != NULL) {
+        lcdev->overlay.clear();
+        if (lcdev->hwif != NULL) {
+            lcdev->hwif->setOverlay(lcdev->overlay);
+        }
     }
 }
 
@@ -881,8 +875,8 @@ void camera_release(struct camera_device * device) {
     struct legacy_camera_device *lcdev = to_lcdev(device);
     LOGV("camera_release:\n");
     destroyOverlay(lcdev);
-    //clearHardwareIntf(lcdev);
     lcdev->hwif->release();
+    lcdev->hwif.clear();
 }
 
 int camera_dump(struct camera_device * device, int fd) {
@@ -900,12 +894,10 @@ int camera_device_close(hw_device_t* device) {
     if (lcdev != NULL) {
         camera_device_ops_t *camera_ops = lcdev->device.ops;
         if (camera_ops) {
-            //clearHardwareIntf(lcdev);
             free(camera_ops);
             camera_ops = NULL;
         }
         destroyOverlay(lcdev);
-        lcdev->overlay->destroy();
         free(lcdev);
         rc = NO_ERROR;
     }

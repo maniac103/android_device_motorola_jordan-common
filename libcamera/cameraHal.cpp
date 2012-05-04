@@ -46,9 +46,7 @@
 
 using namespace std;
 
-#include "CameraHardwareInterface.h"
-
-#define YUV_CAM_FORMAT CameraParameters::PIXEL_FORMAT_YUV422I
+#include "JordanCameraWrapper.h"
 
 #define DISPLAY_RGB565
 
@@ -60,16 +58,9 @@ using namespace std;
 #define HAL_PIXEL_FORMAT HAL_PIXEL_FORMAT_RGBA_8888
 #endif
 
-//Atrix :
-//#define YUV_CAM_FORMAT CameraParameters::PIXEL_FORMAT_YUV420P
-
-/* Prototypes and extern functions. */
-extern "C" android::sp<android::CameraHardwareInterface> HAL_openCameraHardware(int cameraId);
-extern "C" int HAL_getNumberOfCameras();
-extern "C" void HAL_getCameraInfo(int cameraId, struct CameraInfo* cameraInfo);
-
 namespace android {
      int camera_device_open(const hw_module_t* module, const char* name, hw_device_t** device);
+     int CameraHAL_GetNumberOfCameras(void);
      int CameraHAL_GetCam_Info(int camera_id, struct camera_info *info);
 }
 
@@ -89,7 +80,7 @@ camera_module_t HAL_MODULE_INFO_SYM = {
         dso: NULL,
         reserved: {0},
     },
-    get_number_of_cameras: android::HAL_getNumberOfCameras,
+    get_number_of_cameras: android::CameraHAL_GetNumberOfCameras,
     get_camera_info: android::CameraHAL_GetCam_Info,
 };
 
@@ -111,7 +102,7 @@ struct legacy_camera_device {
     preview_stream_ops            *window;
 
     // Old world
-    sp<CameraHardwareInterface>    hwif;
+    sp<JordanCameraWrapper>        hwif;
     gralloc_module_t const        *gralloc;
     vector<camera_memory_t*>       sentMem;
     sp<Overlay>                    overlay;
@@ -490,109 +481,50 @@ void CameraHAL_NotifyCb(int32_t msg_type, int32_t ext1, int32_t ext2, void *user
     }
 }
 
+int CameraHAL_GetNumberOfCameras(void)
+{
+    return 1;
+}
+
 int CameraHAL_GetCam_Info(int camera_id, struct camera_info *info)
 {
-    int rv = 0;
     LOGV("CameraHAL_GetCam_Info()");
 
-    CameraInfo cam_info;
-    HAL_getCameraInfo(camera_id, &cam_info);
-
-    info->facing = cam_info.facing;
+    info->facing = CAMERA_FACING_BACK;
     info->orientation = 90;
 
     LOGD("%s: id:%i faceing:%i orientation: %i", __FUNCTION__,
           camera_id, info->facing, info->orientation);
 
-    return rv;
+    return 0;
 }
 
 void CameraHAL_FixupParams(struct camera_device * device, CameraParameters &settings)
 {
-    /* Motorola omap cameras doesn't support YUV420sp...
-     * it advertises so, but then sends "yuv422i-yuyv"
-     * But nvidia tegra ones does...
-     */
-    settings.set(CameraParameters::KEY_VIDEO_FRAME_FORMAT, YUV_CAM_FORMAT);
-    settings.set(CameraParameters::KEY_SUPPORTED_PREVIEW_FORMATS, YUV_CAM_FORMAT);
-    settings.setPreviewFormat(YUV_CAM_FORMAT);
-
-    if (!settings.get("preview-size-values"))
-        settings.set("preview-size-values", "176x144,320x240,352x288,480x360,640x480,848x480");
-
-    if (!settings.get("picture-size-values"))
-        settings.set("picture-size-values", "320x240,640x480,1280x960,1600x1200,2048x1536,2592x1456,2592x1936");
-
-    if (!settings.get("mot-video-size-values"))
-        settings.set("mot-video-size-values", "176x144,320x240,352x288,640x480,848x480");
-
-    //LibSOCJordanCamera( 2113): Failed substring capabilities check, unsupported parameter newparam=on parseTable[i].key=focus-mode,currparam=auto
-    const char *str_focus = settings.get(android::CameraParameters::KEY_FOCUS_MODE);
-    if (strcmp(str_focus, "on") == 0) {
-        settings.set(android::CameraParameters::KEY_FOCUS_MODE, "auto");
-    }
-
-    /* defy: focus locks the camera, but dunno how to disable it... */
-    if (!settings.get(android::CameraParameters::KEY_SUPPORTED_FOCUS_MODES))
-        settings.set(android::CameraParameters::KEY_SUPPORTED_FOCUS_MODES, "auto,macro,fixed,infinity,off");
-
-    if (!settings.get(android::CameraParameters::KEY_SUPPORTED_EFFECTS))
-        settings.set(android::CameraParameters::KEY_SUPPORTED_EFFECTS, "none,mono,sepia,negative,solarize,red-tint,green-tint,blue-tint");
-//incandescent,warm-fluorescent,cloudy-daylight,twilight,shade,red-eye,torch,fireworks,sports,party,candlelight,50hz,60hz
-
-    if (!settings.get(android::CameraParameters::KEY_SUPPORTED_SCENE_MODES))
-        settings.set(android::CameraParameters::KEY_SUPPORTED_SCENE_MODES,
-                     "auto,portrait,landscape,action,night-portrait,sunset,steadyphoto");
-
-    if (!settings.get(android::CameraParameters::KEY_EXPOSURE_COMPENSATION))
-        settings.set(android::CameraParameters::KEY_EXPOSURE_COMPENSATION, "0");
-
-    if (!settings.get("mot-max-areas-to-focus"))
-        settings.set("mot-max-areas-to-focus", "1");
-    if (!settings.get("mot-areas-to-focus"))
-        settings.set("mot-areas-to-focus", "0");
-
-    //if (!settings.get("zoom-ratios"))
-        settings.set("zoom-ratios", "100,200,300,400,500,600");
-
-    //if (!settings.get("max-zoom"))
-        settings.set("max-zoom", "4");
-
-    /* defy: required to prevent panorama crash, but require also opengl ui */
-    const char *fps_range_values = "(1000,30000),(1000,25000),(1000,20000),"
-                                   "(1000,24000),(1000,15000),(1000,10000)";
-    if (!settings.get(android::CameraParameters::KEY_SUPPORTED_PREVIEW_FPS_RANGE))
-        settings.set(android::CameraParameters::KEY_SUPPORTED_PREVIEW_FPS_RANGE, fps_range_values);
-
-   const char *preview_fps_range = "1000,30000";
-    if (!settings.get(android::CameraParameters::KEY_PREVIEW_FPS_RANGE))
-        settings.set(android::CameraParameters::KEY_PREVIEW_FPS_RANGE, preview_fps_range);
-
     // Fix preview ratio (for wide picture and video formats)
     // should be fixed in camera app... ratio defines, to allow small sizes (panorama)
 
-    const char *target_size = settings.get("picture-size");
-    float ratio = 0.0;
-    int height = 0, width = atoi(target_size);
-    char *sh;
-    bool need_reset = false;
-    if (width > 0) {
-        sh = strstr(target_size, "x");
-        height = atoi(sh + 1);
-        ratio = (height * 1.0) / width;
+    int width = 0, height = 0;
+    bool needReset = false;
+
+    settings.getPictureSize(&width, &height);
+    if (width > 0 && height > 0) {
+        float ratio = (height * 1.0) / width;
+
         if (ratio < 0.70 && width >= 640) {
             settings.setPreviewSize(848, 480);
             settings.set(CameraParameters::KEY_PREFERRED_PREVIEW_SIZE_FOR_VIDEO, "848x480");
-            need_reset = true;
+            needReset = true;
         } else if (width == 848) {
             settings.setPreviewSize(640, 480);
             settings.set(CameraParameters::KEY_PREFERRED_PREVIEW_SIZE_FOR_VIDEO, "640x480");
-            need_reset = true;
+            needReset = true;
         }
-        LOGV("%s: target size %s, ratio %f", __FUNCTION__, target_size, ratio);
+
+        LOGV("%s: target size %dx%d, ratio %f", __FUNCTION__, width, height, ratio);
     }
 
-    if (need_reset) {
+    if (needReset) {
         struct legacy_camera_device *lcdev = to_lcdev(device);
         camera_set_preview_window(device, lcdev->window);
     }
@@ -955,7 +887,8 @@ int camera_device_open(const hw_module_t* module, const char* name, hw_device_t*
     camera_ops->dump                       = camera_dump;
 
     lcdev->id = cameraId;
-    lcdev->hwif = HAL_openCameraHardware(cameraId);
+    lcdev->hwif = JordanCameraWrapper::createInstance(cameraId);
+
     if (lcdev->hwif == NULL) {
          ret = -EIO;
          goto err_create_camera_hw;

@@ -113,6 +113,7 @@ PRODUCT_PACKAGES += RomUpdater
 
 # CM9 apps
 PRODUCT_PACKAGES += Trebuchet FileManager Torch
+PRODUCT_PACKAGES += ThemeChooser Androidian
 #PRODUCT_PACKAGES += DSPManager libcyanogen-dsp
 
 # copy all vendor (motorola) kernel modules to system/lib/modules

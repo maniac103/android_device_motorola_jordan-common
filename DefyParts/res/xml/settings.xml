@@ -42,7 +42,9 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/other_settings_title">
+    <PreferenceCategory android:key="other"
+                        android:title="@string/other_settings_title">
+
         <PreferenceScreen android:key="compass_calibrate"
                           android:title="@string/compass_calibrate">
                           <intent

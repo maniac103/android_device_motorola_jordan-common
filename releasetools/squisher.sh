@@ -13,9 +13,12 @@ rm -f $REPACK/ota/system/app/VideoEditor.apk
 # Remove big videos
 rm -f $REPACK/ota/system/media/video/*.480p.mp4
 
+# Smaller and smoother bootanimation
+cp -f $DEVICE_TOP/prebuilt/bootanimation.zip $REPACK/ota/system/media/bootanimation.zip
+
 # Apk required, (forbidden in product copy files in ics)
-cp $DEVICE_TOP/prebuilt/app/basebandswitcherV4.0.apk $REPACK/ota/system/app/BasebandSwitcher.apk
 cp -f $VENDOR_TOP/app/* $REPACK/ota/system/app/
+#cp -f $DEVICE_TOP/prebuilt/app/basebandswitcherV4.0.apk $REPACK/ota/system/app/
 
 # these scripts are not required or bad
 rm -f $REPACK/ota/system/etc/init.d/04modules

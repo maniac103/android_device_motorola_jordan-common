@@ -36,8 +36,6 @@ PRODUCT_RELEASE_NAME := Defy
 UTC_DATE := $(shell date +%s)
 DATE     := $(shell date +%Y%m%d)
 
-PRODUCT_BUILD_PROP_OVERRIDES += BUILD_DISPLAY_ID="$(BUILD_ID) - Ice Cream Sandwich"
-
 PRODUCT_BUILD_PROP_OVERRIDES += \
     PRODUCT_NAME=${PRODUCT_MODEL}_${PRODUCT_SFX} \
     TARGET_DEVICE=umts_jordan \

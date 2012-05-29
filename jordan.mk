@@ -72,7 +72,6 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += libGLESv2 libEGL libGLESv1_CM
 
 # TO FIX for ICS
-#PRODUCT_PACKAGES += gralloc.jordan hwcomposer.jordan
 PRODUCT_PACKAGES += gralloc.default hwcomposer.default
 
 # ICS Camera
@@ -106,6 +105,10 @@ PRODUCT_PACKAGES += DroidSSHd dropbear dropbearkey sftp-server scp ssh
 
 # CM9 apps
 PRODUCT_PACKAGES += Torch
+PRODUCT_PACKAGES += Androidian Apollo
+
+# Experimental TI OpenLink
+PRODUCT_PACKAGES += libnl_2 iw
 
 # copy all vendor (motorola) kernel modules to system/lib/modules
 PRODUCT_COPY_FILES += $(shell test -d vendor/motorola/jordan/lib/modules &&  \

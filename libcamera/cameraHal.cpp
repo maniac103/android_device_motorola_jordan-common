@@ -601,19 +601,20 @@ static char* camera_get_parameters(struct camera_device * device)
     if (width > 0 && height > 0) {
         float ratio = (height * 1.0) / width;
 
-        if (ratio < 0.70 && width >= 640) {
+        if (ratio < 0.70 && width >= 2592) {
             params.setPreviewSize(848, 480);
             params.set(CameraParameters::KEY_PREFERRED_PREVIEW_SIZE_FOR_VIDEO, "848x480");
-        } else if (width == 848) {
+        } else if (width == 2592) {
             params.setPreviewSize(640, 480);
             params.set(CameraParameters::KEY_PREFERRED_PREVIEW_SIZE_FOR_VIDEO, "640x480");
         }
 
-        LOGV("%s: target size %dx%d, ratio %f", __FUNCTION__, width, height, ratio);
+        LOGW("%s: target size %dx%d, ratio %f", __FUNCTION__, width, height, ratio);
     }
 
     params.getPreviewSize(&width, &height);
     if (width != lcdev->previewWidth || height != lcdev->previewHeight) {
+        LOGW("%s: change to preview size %dx%d camera_set_preview_window", __FUNCTION__, width, height);
         camera_set_preview_window(device, lcdev->window);
     }
 

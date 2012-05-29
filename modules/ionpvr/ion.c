@@ -528,3 +528,9 @@ void __exit exit_ionpvr(void) {
 
 module_init(init_ionpvr);
 module_exit(exit_ionpvr);
+
+MODULE_VERSION("0.1");
+MODULE_DESCRIPTION("Ion test for Motorola 2.6.32 kernel");
+MODULE_AUTHOR("Tanguy Pruvot");
+MODULE_LICENSE("GPL");
+

@@ -100,7 +100,7 @@ static int __init omap_ion_init(void)
 
 	early_memblock(param_memblock);
 
-    omap_register_ion();
+	omap_register_ion();
 
 	ret = ion_init();
 	if (ret != 0) {
@@ -131,11 +131,9 @@ void __exit omap_ion_exit(void)
 
 module_init(omap_ion_init);
 module_exit(omap_ion_exit);
-//MODULE_DEPENDS("ionpvr")
+//MODULE_DEPENDS("ionpvr");
 MODULE_ALIAS(TAG);
 MODULE_VERSION("1.0");
-MODULE_DESCRIPTION("Ion backport for Motoroal 2.6.32 kernel");
+MODULE_DESCRIPTION("Ion backport for Motorola 2.6.32 kernel");
 MODULE_AUTHOR("Tanguy Pruvot, Texas Instruments");
 MODULE_LICENSE("GPL");
-
-

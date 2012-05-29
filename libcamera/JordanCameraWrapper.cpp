@@ -376,6 +376,7 @@ JordanCameraWrapper::setParameters(const CameraParameters& params)
 {
     CameraParameters pars(params.flatten());
     String8 oldFlashMode = mFlashMode;
+    String8 sceneMode;
     status_t retval;
     int width, height;
     char buf[10];
@@ -398,8 +399,23 @@ JordanCameraWrapper::setParameters(const CameraParameters& params)
         pars.setPreviewFrameRate(24);
     }
 
-    mFlashMode = pars.get(CameraParameters::KEY_FLASH_MODE);
+    sceneMode = pars.get(CameraParameters::KEY_SCENE_MODE);
+    if (sceneMode != CameraParameters::SCENE_MODE_AUTO) {
+        /* The lib doesn't seem to update the flash mode correctly when a scene
+           mode is set, so we need to do it here. Also do focus mode, just do
+           be on the safe side. */
+        pars.set(CameraParameters::KEY_FOCUS_MODE, CameraParameters::FOCUS_MODE_AUTO);
 
+        if (sceneMode == CameraParameters::SCENE_MODE_PORTRAIT ||
+            sceneMode == CameraParameters::SCENE_MODE_NIGHT_PORTRAIT)
+        {
+            pars.set(CameraParameters::KEY_FLASH_MODE, CameraParameters::FLASH_MODE_AUTO);
+        } else {
+            pars.set(CameraParameters::KEY_FLASH_MODE, CameraParameters::FLASH_MODE_OFF);
+        }
+    }
+
+    mFlashMode = pars.get(CameraParameters::KEY_FLASH_MODE);
     float exposure = pars.getFloat(CameraParameters::KEY_EXPOSURE_COMPENSATION);
     /* exposure-compensation comes multiplied in the -9...9 range, while
        we need it in the -3...3 range -> adjust for that */
@@ -452,8 +468,8 @@ JordanCameraWrapper::getParameters() const
 
     ret.set(CameraParameters::KEY_VIDEO_FRAME_FORMAT, CameraParameters::PIXEL_FORMAT_YUV422I);
     ret.set(CameraParameters::KEY_SUPPORTED_PREVIEW_FPS_RANGE,
-            "(1000,30000),(1000,25000),(1000,20000),(1000,24000),(1000,15000),(1000,10000)");
-    ret.set(CameraParameters::KEY_PREVIEW_FPS_RANGE, "1000, 30000");
+            "(10000,30000),(10000,25000),(10000,20000),(10000,24000),(10000,15000),(10000,10000)");
+    ret.set(CameraParameters::KEY_PREVIEW_FPS_RANGE, "10000, 30000");
 
     ret.set("cam-mode", mVideoMode ? "1" : "0");
 

@@ -15,7 +15,6 @@ vpnclient.ko:
 tun.ko:
 tiwlan_drv.ko:
 tiap_drv.ko:
-slow-work.ko:
 sec.ko:
 sch_ingress.ko:
 sch_htb.ko:
@@ -38,7 +37,7 @@ overclock_defy.ko:
 cpufreq_stats.ko:
 cpufreq_smartass.ko: symsearch.ko
 cpufreq_interactive.ko: symsearch.ko cpufreq_stats.ko
-cpufreq_boosted.ko: symsearch.ko sio_iosched.ko
+cpufreq_boosted.ko: symsearch.ko
 cpufreq_conservative.ko:
 sio_iosched.ko:
 xt_owner2:

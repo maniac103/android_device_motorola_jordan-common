@@ -31,6 +31,7 @@
 #include <linux/io.h>
 #include <linux/mm.h>
 #include <../arch/arm/plat-omap/include/plat/board-mapphone.h>
+
 #define CAMISE_DRIVER_NAME "camise"
 
 /* list of image formats supported by camise sensor */
@@ -49,19 +50,16 @@ const static struct v4l2_fmtdesc camise_formats[] = {
 		.description	= "Walking 1's pattern",
 		.pixelformat	= V4L2_PIX_FMT_W1S_PATT,
 	},
-
 	{
 		.description	= "YUYV Pattern",
 		.pixelformat	=  V4L2_PIX_FMT_YUYV,
 	},
-
 /*
 	{
-		.description = "UYVY, packed",
-		.pixelformat = V4L2_PIX_FMT_UYVY,
-	}
-*/
-
+		.description	= "UYVY, packed",
+		.pixelformat	= V4L2_PIX_FMT_UYVY,
+	},
+ */
 };
 
 #define NUM_CAPTURE_FORMATS ARRAY_SIZE(camise_formats)
@@ -384,8 +382,7 @@ static int ioctl_g_parm(struct v4l2_int_device *s,
  * not possible, reverts to the old parameters and returns the
  * appropriate error code.
  */
-static int ioctl_s_parm(struct v4l2_int_device *s,
-			     struct v4l2_streamparm *a)
+static int ioctl_s_parm(struct v4l2_int_device *s, struct v4l2_streamparm *a)
 {
 	return 0;
 }
@@ -399,11 +396,9 @@ static int ioctl_s_parm(struct v4l2_int_device *s,
  */
 static int ioctl_g_priv(struct v4l2_int_device *s, void *p)
 {
-
 	struct camise_sensor *sensor = s->priv;
 
 	return sensor->pdata->priv_data_set(p);
-
 }
 
 /**
@@ -417,8 +412,7 @@ static int ioctl_g_priv(struct v4l2_int_device *s, void *p)
  * The value is returned in 'val'.
  * Returns zero if successful, or non-zero otherwise.
  */
-static int camise_read_reg(struct i2c_client *client, u16 data_length, u16 reg,
-								u32 *val)
+static int camise_read_reg(struct i2c_client *client, u16 data_length, u16 reg, u32 *val)
 {
 	int err = 0;
 	struct i2c_msg msg[1];
@@ -437,6 +431,7 @@ static int camise_read_reg(struct i2c_client *client, u16 data_length, u16 reg,
 	data[1] = (u8) (reg & 0xff);
 
 	err = i2c_transfer(client->adapter, msg, 1);
+	pr_info("camise: i2c write addr=%x offset=%hx, res=%x\n", msg->addr, reg, err);
 	if (err >= 0) {
 		mdelay(3);
 		msg->flags = I2C_M_RD;
@@ -453,10 +448,10 @@ static int camise_read_reg(struct i2c_client *client, u16 data_length, u16 reg,
 		else
 			*val = data[3] + (data[2] << 8) +
 				(data[1] << 16) + (data[0] << 24);
+		pr_info("camise: i2c read val 0x%x, res=%d\n", *val, err);
 		return 0;
 	}
 	dev_err(&client->dev, "read from offset 0x%x error %d\n", reg, err);
-
 	return err;
 }
 
@@ -532,7 +527,7 @@ static int ioctl_s_power(struct v4l2_int_device *s, enum v4l2_power on)
 		/* free up all the camise resources */
 		sensor->pdata->power_set(sensor->dev, V4L2_POWER_OFF);
 		platform_device_register(&cam_misc_device);
-		pr_info(CAMISE_DRIVER_NAME " Sensor detected\n");
+		pr_info(CAMISE_DRIVER_NAME " sensor detected\n");
 		rval = 0;
 	}
 
@@ -761,7 +756,7 @@ static int camise_probe(struct i2c_client *client,
 	struct camise_platform_data *pdata;
 	int err = 0;
 
-	printk(KERN_INFO "camise_probe\n");
+	pr_debug("camise_probe\n");
 
 	if (i2c_get_clientdata(client))
 		return -EBUSY;
@@ -842,7 +837,7 @@ static void __exit camisesensor_exit(void)
 module_init(camisesensor_init);
 module_exit(camisesensor_exit);
 
-MODULE_VERSION("1.0");
+MODULE_VERSION("1.1");
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("CAMISE camera sensor driver");
 MODULE_AUTHOR("Tanguy Pruvot, From Motorola Open Sources");

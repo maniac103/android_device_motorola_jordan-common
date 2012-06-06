@@ -1,0 +1,36 @@
+<6>[    0.000000] GPIO mapping write: pin = 98, name = gpio_cam_reset
+<6>[    0.000000] GPIO mapping write: pin = 64, name = gpio_cam_pwdn
+<6>[    0.000000] feature_mipi_cam 0
+<6>[    0.000000] feature_smart_cam 0
+<6>[    0.000000] feature_cam_flags 1
+<3>[    0.000000] Unable to get gpio pin num for cam_avdd_en
+<6>[    0.000000] Regulators for device: vcam
+<6>[    0.000000] Adding vcam to camera 						regulator list
+<6>[    0.000000] mapphone_camera_init: conventional camera
+<6>[    0.000000] I2C-3 devices: HP_GEN_LENS,lm3554_led,mt9p012,camise
+<6>[    0.000000] camise -> I2C bus-3
+<6>[    7.663024] regulator: vcam: 2900 mV 
+<6>[    9.332580] mapphone_camera_reg_power - enable vcam
+<6>[    9.409637] mapphone_camera_reg_power - disable vcam
+<6>[    9.410003] mapphone_camera_reg_power - enable vcam
+<6>[    9.487762] mapphone_camera_reg_power - disable vcam
+<6>[    9.488098] mapphone_camera_reg_power - enable vcam
+<6>[    9.565856] mapphone_camera_reg_power - disable vcam
+<6>[    9.566070] mapphone_camera_reg_power - enable vcam
+<6>[    9.643951] mapphone_camera_reg_power - disable vcam
+<6>[    9.645904] mapphone_camera_reg_power - enable vcam
+<6>[    9.721984] mapphone_camera_reg_power - disable vcam
+<6>[    9.722503] camise_probe
+<7>[    9.722747] camise_sensor_power_set: power on
+<6>[    9.722869] cam_reset_gpio 98
+<6>[    9.722961] cam_standby_gpio 64
+<6>[    9.745544] mapphone_camera_reg_power - enable vcam
+<7>[    9.873809] camise_sensor_power_set: power off
+<6>[    9.886199] mapphone_camera_reg_power - disable vcam
+<6>[    9.886688] camera_misc_probe - probe function called
+<6>[    9.886810] fun camera_misc_probe gpio_cam_reset=98 gpio_cam_pwdn=64
+<6>[    9.887298] camise Sensor detected
+<6>[    9.887725] video4linux video3: video3 is now omap3/camise//
+<6>[    9.888000] mapphone_camera_reg_power - enable vcam
+<3>[    9.917449] Failed to req cam standby
+<6>[    9.948669] mapphone_camera_reg_power - disable vcam

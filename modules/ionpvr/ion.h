@@ -27,8 +27,10 @@
 #ifndef __IMG_LINUX_ION_H__
 #define __IMG_LINUX_ION_H__
 
-#include "../../misc/ion/linux/ion.h"
-#include "../../misc/ion/linux/omap_ion.h"
+//#include "../../misc/ion/linux/ion.h"
+//#include "../../misc/ion/linux/omap_ion.h"
+#include "linux/ion.h"
+#include "linux/omap_ion.h"
 
 struct ion_handle *PVRSRVExportFDToIONHandle(int fd,
 											 struct ion_client **client);

@@ -101,7 +101,7 @@ PRODUCT_PACKAGES += libfnc DefyParts Usb
 PRODUCT_PACKAGES += charge_only_mode mot_boot_mode lights.jordan sensors.jordan
 
 # Add DroidSSHd (dropbear) Management App - tpruvot/android_external_droidsshd @ github
-PRODUCT_PACKAGES += DroidSSHd dropbear dropbearkey sftp-server scp ssh
+PRODUCT_PACKAGES += DroidSSHd dropbear dropbearkey sftp-server scp ssh rsync
 
 # CM9 apps
 PRODUCT_PACKAGES += Torch

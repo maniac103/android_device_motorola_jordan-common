@@ -18,7 +18,8 @@ obj-m += netfilter/
 obj-m += proximity/
 
 # experimental
-#obj-m += ion/
+# obj-m += ion/ ionpvr/
+obj-m += camera_misc/
 
 PWD := $(shell pwd)
 
@@ -51,3 +52,9 @@ modules:
 	@find $(PWD) | grep "\\.order$$" | xargs rm -f
 	@find $(PWD) | grep "\\.tmp_versions$$" | xargs rm -rf
 
+device_modules:
+	@echo YOU ARE NOT AT THE GOOD PLACE TO DO THAT ! go to repo root and copy/paste that :
+	@echo
+	@echo . build/envsetup.sh
+	@echo bib jordan
+	@echo make device_modules

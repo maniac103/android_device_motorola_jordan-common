@@ -45,7 +45,9 @@
 #include <linux/mutex.h>
 #include <linux/seq_file.h>
 
-#include "../../misc/symsearch/symsearch.h"
+//#include "../../misc/symsearch/symsearch.h"
+#include "../symsearch/symsearch.h"
+
 SYMSEARCH_DECLARE_FUNCTION_STATIC(PVRSRV_ERROR, _PVRSRVLookupHandle, PVRSRV_HANDLE_BASE *psBase, IMG_PVOID *ppvData, IMG_HANDLE hHandle, PVRSRV_HANDLE_TYPE eType);
 
 SYMSEARCH_DECLARE_FUNCTION_STATIC(PVRSRV_ERROR, _PVRSRVPerProcessDataConnect, IMG_UINT32 ui32PID);
@@ -529,7 +531,7 @@ void __exit exit_ionpvr(void) {
 module_init(init_ionpvr);
 module_exit(exit_ionpvr);
 
-MODULE_VERSION("0.1");
+MODULE_VERSION("0.2");
 MODULE_DESCRIPTION("Ion test for Motorola 2.6.32 kernel");
 MODULE_AUTHOR("Tanguy Pruvot");
 MODULE_LICENSE("GPL");

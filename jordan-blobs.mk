@@ -48,8 +48,8 @@ PRODUCT_COPY_FILES += \
 	${device_path}/modules/modules.dep:system/lib/modules/modules.dep \
 	$(DEVICE_PREBUILT)/etc/init.d/00baseband:system/etc/init.d/00baseband \
 	$(DEVICE_PREBUILT)/etc/init.d/01sysctl:system/etc/init.d/01sysctl \
-	$(DEVICE_PREBUILT)/etc/init.d/02ipv6:system/etc/init.d/02ipv6 \
 	$(DEVICE_PREBUILT)/etc/init.d/03firstboot:system/etc/init.d/03firstboot \
+	$(DEVICE_PREBUILT)/etc/init.d/04filesystems:system/etc/init.d/04filesystems \
 	$(DEVICE_PREBUILT)/etc/init.d/05mountsd:system/etc/init.d/05mountsd \
 	$(DEVICE_PREBUILT)/etc/init.d/06ion:system/etc/init.d/06ion \
 	$(DEVICE_PREBUILT)/etc/init.d/07camera:system/etc/init.d/07camera \

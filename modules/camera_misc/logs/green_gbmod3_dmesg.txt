@@ -1,0 +1,46 @@
+<6>[    0.000000] GPIO mapping write: pin = 98, name = gpio_cam_reset
+<6>[    0.000000] GPIO mapping write: pin = 64, name = gpio_cam_pwdn
+<6>[    0.000000] feature_mipi_cam 0
+<6>[    0.000000] feature_smart_cam 0
+<6>[    0.000000] feature_cam_flags 1
+<6>[    0.000000] Regulators for device: vcam
+<6>[    0.000000] Adding vcam to camera 						regulator list
+<6>[    0.000000] mapphone_camera_init: conventional camera
+<6>[    7.522552] regulator: vcam: 2900 mV 
+<6>[    9.196655] mapphone_camera_reg_power - enable vcam
+<6>[    9.227630] cam_reset_gpio 98
+<6>[    9.274444] mapphone_camera_reg_power - disable vcam
+<6>[    9.274749] mapphone_camera_reg_power - enable vcam
+<6>[    9.305755] cam_reset_gpio 98
+<6>[    9.352508] mapphone_camera_reg_power - disable vcam
+<6>[    9.352844] mapphone_camera_reg_power - enable vcam
+<6>[    9.383789] cam_reset_gpio 98
+<6>[    9.430694] mapphone_camera_reg_power - disable vcam
+<6>[    9.430908] mapphone_camera_reg_power - enable vcam
+<6>[    9.461791] cam_reset_gpio 98
+<6>[    9.508758] mapphone_camera_reg_power - disable vcam
+<6>[    9.510559] mapphone_camera_reg_power - enable vcam
+<6>[    9.540069] cam_reset_gpio 98
+<6>[    9.586944] mapphone_camera_reg_power - disable vcam
+<6>[   17.473876] fun camera_misc_init:unregister red lens
+<6>[   17.475524] camise_probe
+<7>[   17.475860] camise_sensor_power_set: power on
+<7>[   17.477325] gpiofix: get_gpio_by_name(gpio_cam_reset)
+<6>[   17.477661] cam_reset_gpio 98
+<7>[   17.477813] gpiofix: get_gpio_by_name(gpio_cam_pwdn)
+<6>[   17.477935] cam_standby_gpio 64
+<7>[   17.478088] camise_if_configure
+<7>[   17.629638] camise_sensor_power_set: power off
+<6>[   17.645538] camise Sensor detected
+<6>[   17.647277] video4linux video3: video3 is now omap3/camise//
+<7>[   17.647888] gpiofix: get_gpio_by_name(gpio_cam_pwdn)
+<6>[   17.648437] mapphone_camera_reg_power - enable vcam
+<7>[   17.672912] gpiofix: get_gpio_by_name(gpio_cam_reset)
+<6>[   17.673187] cam_reset_gpio 98
+<6>[   17.719940] mapphone_camera_reg_power - disable vcam
+<6>[   17.720642] camise_add_i2c_device: done
+<6>[   17.721496] camera_misc_probe - probe function called
+<7>[   17.721801] gpiofix: get_gpio_by_name(gpio_cam_reset)
+<7>[   17.722534] gpiofix: get_gpio_by_name(gpio_cam_pwdn)
+<6>[   17.722808] fun camera_misc_probe:gpio_cam_reset=98 gpio_cam_pwdn=64
+<6>[   17.745330] camera: hooked omapvout_open

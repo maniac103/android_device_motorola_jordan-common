@@ -21,25 +21,25 @@
  */
 
 #include "hook.h"
-//#include "../../misc/symsearch/symsearch.h"
 #include "../symsearch/symsearch.h"
-
 #include <linux/module.h>
 #include <linux/kallsyms.h>
 #include <linux/smp_lock.h>
 
 //FIX ME (dynamic module name)
-#define MODULE_NAME "ionpvr"
-#define MODULE_TAG ionpvr
+#define MODULE_NAME "camera"
+#define MODULE_TAG camera
 
 //#define DEBUG_HOOK
 #ifdef DEBUG_HOOK
-#define P(format, ...) printk(KERN_INFO "hook: " format, ## __VA_ARGS__)
+#define P(format, ...) printk(KERN_INFO MODULE_NAME ": " format, ## __VA_ARGS__)
 #else
 #define P(format, ...)
 #endif
 
 #define INFO(format, ...) (printk(KERN_INFO MODULE_NAME ": " format, ## __VA_ARGS__))
+#define ERR(format, ...)   (printk(KERN_ERR MODULE_NAME ": " format, ## __VA_ARGS__))
+
 
 SYMSEARCH_DECLARE_FUNCTION_STATIC(unsigned long, pkallsyms_lookup_name, const char *);
 SYMSEARCH_DECLARE_FUNCTION_STATIC(const char *, pkallsyms_lookup, unsigned long, unsigned long *, unsigned long *, char **, char *);
@@ -56,7 +56,7 @@ int hook(struct hook_info *hi) {
 			hi->target = (unsigned int*)pkallsyms_lookup_name(hi->targetName);
 		}
 		if ( !hi->target ) {
-			P("Target address is not defined and targetName(%s) cannot be found.\n", hi->targetName ?
+			ERR("Target address is not defined and targetName(%s) cannot be found.\n", hi->targetName ?
 					hi->targetName : "");
 			return -1;
 		}
@@ -95,8 +95,8 @@ int unhook(struct hook_info *hi) {
 
 int hook_init(void) {
 	int i;
-	SYMSEARCH_BIND_FUNCTION_TO(ionpvr, kallsyms_lookup_name, pkallsyms_lookup_name);
-	SYMSEARCH_BIND_FUNCTION_TO(ionpvr, kallsyms_lookup, pkallsyms_lookup);
+	SYMSEARCH_BIND_FUNCTION_TO(camera, kallsyms_lookup_name, pkallsyms_lookup_name);
+	SYMSEARCH_BIND_FUNCTION_TO(camera, kallsyms_lookup, pkallsyms_lookup);
 	lock_kernel();
 	for (i = 0; g_hi[i].newfunc; ++i) {
 		hook(&g_hi[i]);

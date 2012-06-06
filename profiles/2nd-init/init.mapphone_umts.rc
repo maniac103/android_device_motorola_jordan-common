@@ -9,6 +9,38 @@ on init
     symlink mmcblk1p24 /dev/block/cache
     symlink mmcblk1p25 /dev/block/userdata
 
+    # note: we use 2nd-init, /system is already mounted
+
+    # Load kernel modules
+    insmod /system/lib/modules/netmux.ko
+    insmod /system/lib/modules/netmux_linkdriver.ko
+    insmod /system/lib/modules/modem_pm_driver.ko
+
+    insmod /system/lib/modules/ip6_tables.ko
+    insmod /system/lib/modules/ip6table_filter.ko
+    insmod /system/lib/modules/ip6table_mangle.ko
+    insmod /system/lib/modules/ip6t_REJECT.ko
+    insmod /system/lib/modules/ip6t_LOG.ko
+
+    insmod /system/lib/modules/xt_tcpmss.ko
+    insmod /system/lib/modules/xt_TCPMSS.ko
+    insmod /system/lib/modules/iptable_mangle.ko
+    insmod /system/lib/modules/xt_multiport.ko
+    insmod /system/lib/modules/xt_quota2.ko
+    insmod /system/lib/modules/xt_owner2.ko
+
+    insmod /system/lib/modules/tun.ko
+
+    insmod /system/lib/modules/symsearch.ko
+    insmod /system/lib/modules/mmcfix.ko
+    insmod /system/lib/modules/usbled.ko
+    insmod /system/lib/modules/clockfix.ko
+    insmod /system/lib/modules/gpiofix.ko
+
+    # maybe later for /data or /cache, need tests
+    # insmod /system/lib/modules/jbd2.ko
+    # insmod /system/lib/modules/ext4.ko
+
 on fs
     log "== mapphone: on fs ------------------------"
 
@@ -88,7 +120,7 @@ on post-fs
 
 on post-fs-data
     log "== mapphone: on post-fs-data -------------------"
-   
+
     # event in bootmenu (cpu settings & postbootmenu)
     exec /system/bin/logwrapper postbootmenu
 
@@ -110,8 +142,8 @@ on post-fs-data
     chmod 0770 /pds/bp_nvm
     chmod 0770 /pds/security
     # wifi dirs
-    mkdir /data/misc/wifi/hostapd.sockets 0770 wifi wifi
-    mkdir /data/misc/wifi/sockets 0770 wifi wifi
+    mkdir /data/misc/wifi/hostapd 0770 system wifi
+    mkdir /data/misc/wifi/sockets 0770 system wifi
     mkdir /data/misc/dhcp 0770 dhcp dhcp
     mkdir /data/comm_drv 0770 radio radio
     chown dhcp dhcp /data/misc/dhcp
@@ -145,51 +177,6 @@ on post-fs-data
     chown system system /data/tpapi/etc/tpa/persistent
 
     setprop vold.post_fs_data_done 1
-
-on init
-    log "== mapphone: on init ----------------------"
-
-    # Temporary fix permissions for gb kernel
-    chown root system /dev/cpcap
-    chown root system /dev/cpcap_batt
-    chown root system /dev/cpcap_mot_rtc
-    chown root system /dev/cpcap_uc
-    chown root system /dev/i2c-1
-    chown root system /dev/i2c-2
-    chown root root /dev/smodule
-    chown root system /dev/ttyGS0
-    chown root system /dev/tcmd_driver
-
-    chmod 0660 /dev/cpcap
-    chmod 0660 /dev/cpcap_batt
-    chmod 0660 /dev/cpcap_mot_rtc
-    chmod 0660 /dev/cpcap_uc
-    chmod 0660 /dev/i2c-1
-    chmod 0660 /dev/i2c-2
-    chmod 0660 /dev/smodule
-    chmod 0666 /dev/ttyGS0
-    chmod 0660 /dev/tcmd_driver
-
-    # Install kernel modules
-    insmod /system/lib/modules/netmux.ko
-    insmod /system/lib/modules/netmux_linkdriver.ko
-    insmod /system/lib/modules/modem_pm_driver.ko
-
-    insmod /system/lib/modules/xt_multiport.ko
-    insmod /system/lib/modules/xt_quota2.ko
-    insmod /system/lib/modules/xt_owner2.ko
-
-    insmod /system/lib/modules/tun.ko
-    insmod /system/lib/modules/symsearch.ko
-    insmod /system/lib/modules/mmcfix.ko
-    insmod /system/lib/modules/usbled.ko
-    insmod /system/lib/modules/clockfix.ko
-    insmod /system/lib/modules/gpiofix.ko
-
-    # Cifs module is actually not compiled by us
-    insmod /system/lib/modules/nls_utf8.ko
-    insmod /system/lib/modules/slow-work.ko
-    insmod /system/lib/modules/cifs.ko
 
 on charger
     log "== mapphone: on charger -------------------"
@@ -325,16 +312,24 @@ service akmd2 /system/bin/akmd2
     group compass misc input
 
 # Wifi services
-service wlan_loader /system/bin/logwrapper /system/bin/wlan_loader -f /system/etc/wifi/fw_wlan1271.bin -i /system/etc/wifi/tiwlan.ini -e /pds/wifi/nvs_map.bin
+service wlan_loader /system/bin/wlan_loader -f /system/etc/wifi/fw_wlan1271.bin -i /system/etc/wifi/tiwlan.ini -e /pds/wifi/nvs_map.bin
     class main
     disabled
     oneshot
+service wlan_ap_loader /system/bin/tiap_loader -f /system/etc/wifi/fw_tiwlan_ap.bin -i /system/etc/wifi/tiwlan_ap.ini -e /pds/wifi/nvs_map.bin
+    class main
+    disabled
+    oneshot
+
 service wpa_supplicant /system/bin/wpa_supplicant -Dtiwlan0 -itiwlan0 -c/data/misc/wifi/wpa_supplicant.conf
     class main
     socket wpa_tiwlan0 dgram 660 wifi wifi
     disabled
     oneshot
-service wlan_ap_loader /system/bin/logwrapper /system/bin/tiap_loader -f /system/etc/wifi/fw_tiwlan_ap.bin -i /system/etc/wifi/tiwlan_ap.ini -e /pds/wifi/nvs_map.bin
+service hostapd /system/bin/logwrapper.bin /system/bin/hostapd -d /data/misc/wifi/hostapd.conf
+    class main
+    group wifi system inet net_admin
+    socket wpa_tiap0 dgram 660 wifi wifi
     disabled
     oneshot
 

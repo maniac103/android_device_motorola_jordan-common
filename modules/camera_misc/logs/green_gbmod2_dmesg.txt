@@ -1,0 +1,45 @@
+<6>[    0.000000] GPIO mapping write: pin = 98, name = gpio_cam_reset
+<6>[    0.000000] GPIO mapping write: pin = 64, name = gpio_cam_pwdn
+<6>[    0.000000] feature_mipi_cam 0
+<6>[    0.000000] feature_smart_cam 0
+<6>[    0.000000] feature_cam_flags 1
+<6>[    0.000000] Regulators for device: vcam
+<6>[    0.000000] Adding vcam to camera 						regulator list
+<6>[    0.000000] mapphone_camera_init: conventional camera
+<6>[    7.499023] regulator: vcam: 2900 mV 
+<6>[    9.187377] mapphone_camera_reg_power - enable vcam
+<6>[    9.218414] cam_reset_gpio 98
+<6>[    9.265228] mapphone_camera_reg_power - disable vcam
+<6>[    9.265563] mapphone_camera_reg_power - enable vcam
+<6>[    9.296539] cam_reset_gpio 98
+<6>[    9.343353] mapphone_camera_reg_power - disable vcam
+<6>[    9.343658] mapphone_camera_reg_power - enable vcam
+<6>[    9.374572] cam_reset_gpio 98
+<6>[    9.421417] mapphone_camera_reg_power - disable vcam
+<6>[    9.421630] mapphone_camera_reg_power - enable vcam
+<6>[    9.452697] cam_reset_gpio 98
+<6>[    9.499603] mapphone_camera_reg_power - disable vcam
+<6>[    9.501434] mapphone_camera_reg_power - enable vcam
+<6>[    9.530853] cam_reset_gpio 98
+<6>[    9.577758] mapphone_camera_reg_power - disable vcam
+<6>[   17.328582] camise_probe
+<7>[   17.328857] camise_sensor_power_set: power on
+<7>[   17.329956] gpiofix: get_gpio_by_name(gpio_cam_reset)
+<6>[   17.330078] cam_reset_gpio 98
+<7>[   17.330291] gpiofix: get_gpio_by_name(gpio_cam_pwdn)
+<6>[   17.330383] cam_standby_gpio 64
+<7>[   17.480468] camise_sensor_power_set: power off
+<6>[   17.495758] camise Sensor detected
+<6>[   17.497528] video4linux video3: video3 is now omap3/camise//
+<7>[   17.498138] gpiofix: get_gpio_by_name(gpio_cam_pwdn)
+<6>[   17.498687] mapphone_camera_reg_power - enable vcam
+<7>[   17.523162] gpiofix: get_gpio_by_name(gpio_cam_reset)
+<6>[   17.523651] cam_reset_gpio 98
+<6>[   17.570159] mapphone_camera_reg_power - disable vcam
+<6>[   17.570861] camise_add_i2c_device: done
+<6>[   17.571502] camera_misc_probe - probe function called
+<7>[   17.571990] gpiofix: get_gpio_by_name(gpio_cam_reset)
+<7>[   17.572509] gpiofix: get_gpio_by_name(gpio_cam_pwdn)
+<6>[   17.573028] fun camera_misc_probe gpio_cam_reset=98 gpio_cam_pwdn=64
+<6>[   17.595031] camera: hooked try_pix_parm
+<6>[   17.603881] camera: hooked ispccdc_config_datapath

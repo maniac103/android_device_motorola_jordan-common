@@ -11,6 +11,7 @@
 #include <linux/string.h>
 #include <linux/gpio_mapping.h>
 #include <plat/resource.h>
+#include <media/v4l2-device.h> //v4l2_device_unregister_subdev
 
 #ifdef CONFIG_ARM_OF
 # include <mach/dt_path.h>
@@ -23,18 +24,14 @@
 # include <../drivers/media/video/isp/ispreg.h>
 # include <../drivers/media/video/isp/isp.h>
 # include <../drivers/media/video/isp/ispcsi2.h>
-# if defined(CONFIG_VIDEO_MT9P012) || defined(CONFIG_VIDEO_MT9P012_MODULE)
-#  include <media/mt9p012.h>
-#  define MT9P012_XCLK_48MHZ		48000000
-# endif
 # if defined(CONFIG_VIDEO_OV8810) || defined(CONFIG_VIDEO_OV8810_MODULE)
 #  include <media/ov8810.h>
 #  if defined(CONFIG_LEDS_FLASH_RESET)
 #   include <linux/spi/cpcap.h>
 #   include <linux/spi/cpcap-regbits.h>
 #  endif
-#  include "camise.h"
 # endif
+# include "camise.h"
 #endif
 
 #define CAM_IOMUX_SAFE_MODE (OMAP343X_PADCONF_PULL_UP | \
@@ -95,16 +92,23 @@ const static struct camise_capture_size camise_sizes_2[] = {
 	{  768, 1024}, /* JPEG Catpure Resolution */
 };
 
+/* weird, this setting is sensible, and cant be tuned too low or too high
+   one image is 614400 for 640x480 (4:3) or 831488 for 848*480 (WVGA) */
 static struct omap34xxcam_sensor_config camise_cam_hwc = {
 	.sensor_isp = 1,
 	.xclk = OMAP34XXCAM_XCLK_A,
-	.capture_mem = PAGE_ALIGN(2048 * 1536 * 2) * 4,
+	.capture_mem = 0x1000000,
+//	.capture_mem = PAGE_ALIGN(2048 * 1536 * 2) * 4,
+//	.capture_mem = PAGE_ALIGN(640 * 480 * 2) * 4,
+//	.capture_mem = PAGE_ALIGN(2592 * 1936 * 2) * 2,
+//	.capture_mem = PAGE_ALIGN(2592 * 1944 * 2) * 4,
 };
 
 static struct isp_interface_config camise_if_config = {
 	.ccdc_par_ser = ISP_PARLL,
 	.dataline_shift = 0x2, /* 8bit sensor using D11 to D4. */
 	.hsvs_syncdetect = ISPCTRL_SYNC_DETECT_VSRISE,
+//	.hsvs_syncdetect = ISPCTRL_SYNC_DETECT_VSFALL,
 	.strobe = 0x0,
 	.prestrobe = 0x0,
 	.shutter = 0x0,
@@ -277,6 +281,7 @@ static int camise_sensor_set_prv_data(void *priv)
 
 static void camise_if_configure(void)
 {
+	pr_info("%s\n", __func__);
 	isp_configure_interface(&camise_if_config);
 }
 
@@ -288,7 +293,7 @@ static int camise_sensor_power_set(struct device *dev, enum v4l2_power power)
 	switch (power) {
 	case V4L2_POWER_OFF:
 		if (previous_power != V4L2_POWER_OFF) {
-			printk(KERN_DEBUG "%s: power off\n", __func__);
+			pr_info("%s: power off\n", __func__);
 			/* Power Down Sequence
 			Need to free gpios since other drivers may request them
 			*/
@@ -318,7 +323,7 @@ static int camise_sensor_power_set(struct device *dev, enum v4l2_power power)
 		break;
 
 	case V4L2_POWER_ON:
-		printk(KERN_DEBUG "%s: power on\n", __func__);
+		pr_info("%s: power on\n", __func__);
 
 		if (previous_power == V4L2_POWER_OFF) {
 			mapphone_camera_lines_func_mode();
@@ -375,7 +380,6 @@ static int camise_sensor_power_set(struct device *dev, enum v4l2_power power)
 				gpio_set_value(cam_reset_gpio, 0);
 				msleep(10);
 				gpio_set_value(cam_reset_gpio, 1);
-				msleep(10);
 			}
 
 			/* Wait 20ms per OVT recommendation */
@@ -411,21 +415,41 @@ struct camise_platform_data mapphone_camise_platform_data = {
 	.get_size       = camise_get_capture_size,
 };
 
-struct i2c_board_info __initdata mapphone_i2c_bus_camise_board_info = {
+struct i2c_board_info mapphone_i2c_bus_camise_board_info = {
 	I2C_BOARD_INFO("camise", CAMISE_I2C_ADDR),
 	.platform_data = &mapphone_camise_platform_data,
 };
 
+/**********************************************************************/
+
+static struct i2c_client* i2c_lens = NULL;
+static int __i2c_at_addr(struct device *dev, void *addrp)
+{
+	struct i2c_client   *client = i2c_verify_client(dev);
+	int    addr = *(int *)addrp;
+	if (client && client->addr == addr) {
+		i2c_lens = client;
+		return -EBUSY;
+	}
+	return 0;
+}
+static struct i2c_client* i2c_client_at(struct i2c_adapter *adapter, int addr)
+{
+	i2c_lens = NULL;
+	device_for_each_child(&adapter->dev, &addr, __i2c_at_addr);
+	return i2c_lens;
+}
+
+/**********************************************************************/
+
+static struct i2c_client *camise_client = NULL;
+static bool i2c_client_created = false;
+
 int camise_add_i2c_device(void)
 {
-	struct i2c_board_info info;
+	int ret = 0;
 	struct i2c_adapter *adapter;
-	struct i2c_client *client;
-
-	memset(&info, 0, sizeof(struct i2c_board_info));
-	info.addr = CAMISE_I2C_ADDR;
-	strlcpy(info.type, "camise", I2C_NAME_SIZE);
-	info.platform_data = &mapphone_camise_platform_data;
+	struct i2c_client  *client;
 
 	adapter = i2c_get_adapter(3);
 	if (!adapter) {
@@ -433,14 +457,73 @@ int camise_add_i2c_device(void)
 		return -ENODEV;
 	}
 
-	client = i2c_new_device(adapter, &info);
-	i2c_put_adapter(adapter);
+	client = i2c_client_at(adapter, CAMISE_I2C_ADDR); // 0x3c
 	if (!client) {
-		printk(KERN_DEBUG "can't add i2c device\n");
-		return -ENODEV;
+		// dont exists (gb kernel) ? so create the device
+		camise_client = i2c_new_device(adapter,
+			&mapphone_i2c_bus_camise_board_info);
+		if (!camise_client) {
+			pr_warning("%s: can't add i2c device\n", __func__);
+			i2c_client_created = false;
+			return -ENODEV;
+		}
+		pr_info("%s: done\n", __func__);
+		i2c_client_created = true;
+	} else {
+		camise_client = client;
+		ret = -EEXIST;
 	}
+	i2c_put_adapter(adapter);
 
-	printk(KERN_INFO "camise_add_i2c_device: done\n");
+	return ret;
+}
 
-	return 0;
+void camise_del_i2c_device(void)
+{
+	if (i2c_client_created && camise_client) {
+		pr_info("unregistering camise i2c device\n");
+		i2c_unregister_device(camise_client);
+		camise_client = NULL;
+		i2c_client_created = false;
+	}
+}
+
+/**********************************************************************/
+
+#define HPLENS_DRV_SYSFS "hplens-omap"
+void hplens_i2c_release(void)
+{
+	struct i2c_adapter *adapter;
+	struct i2c_client  *client;
+	void * subdev = NULL;
+
+	adapter = i2c_get_adapter(3);
+	client = i2c_client_at(adapter, 0x04);
+	if (client) {
+		pr_info("found hplens i2c client at 3-0004\n");
+
+		subdev = i2c_get_clientdata(client);
+		pr_info(" v4l2_device_unregister_subdev %x\n", (u32) subdev);
+		v4l2_device_unregister_subdev(subdev);
+		pr_info(" i2c_unregister_device\n");
+		i2c_unregister_device(client);
+		i2c_put_adapter(adapter);
+		pr_info(" unregister_chrdev\n");
+		unregister_chrdev(245, HPLENS_DRV_SYSFS);
+	}
+}
+
+void aptina_i2c_release(void)
+{
+	struct i2c_adapter *adapter;
+	struct i2c_client  *client;
+
+	adapter = i2c_get_adapter(3);
+	client = i2c_client_at(adapter, 0x36);
+	if (client) {
+		pr_info("found mt9p012 i2c client at 3-0036\n");
+		pr_info(" i2c_unregister_device\n");
+		i2c_unregister_device(client);
+		i2c_put_adapter(adapter);
+	}
 }

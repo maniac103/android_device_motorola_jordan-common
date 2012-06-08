@@ -110,7 +110,7 @@ MODVERSION=`sed -n -e'/ro\.modversion/s/^.*=//p' $REPACK/ota/system/build.prop`
 : ${MODVERSION:=nightly}
 
 MODVERSION=`echo $MODVERSION | sed 's/CyanogenMod-//'`
-OUTFILE=$OUT/update-cm-$MODVERSION-signed.zip
+OUTFILE=$OUT/cm-$MODVERSION-signed.zip
 
 if [ -n "$CM_NIGHTLY" ]; then
 	OUTFILE=$OUT/CM$MODVERSION.zip

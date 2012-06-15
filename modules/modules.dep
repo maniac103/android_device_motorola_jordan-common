@@ -43,6 +43,8 @@ cpufreq_boosted.ko: symsearch.ko
 cpufreq_conservative.ko:
 sio_iosched.ko:
 iptable_mangle.ko:
+iptable_raw.ko:
+ip6table_raw.ko: ip6_tables.ko
 ip6table_mangle.ko: ip6_tables.ko
 ip6table_filter.ko: ip6_tables.ko
 ip6_tables.ko:

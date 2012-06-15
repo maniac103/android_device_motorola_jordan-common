@@ -16,15 +16,18 @@ on init
     insmod /system/lib/modules/netmux_linkdriver.ko
     insmod /system/lib/modules/modem_pm_driver.ko
 
+    insmod /system/lib/modules/iptable_raw.ko
+    insmod /system/lib/modules/iptable_mangle.ko
+
     insmod /system/lib/modules/ip6_tables.ko
     insmod /system/lib/modules/ip6table_filter.ko
+    insmod /system/lib/modules/ip6table_raw.ko
     insmod /system/lib/modules/ip6table_mangle.ko
     insmod /system/lib/modules/ip6t_REJECT.ko
     insmod /system/lib/modules/ip6t_LOG.ko
 
     insmod /system/lib/modules/xt_tcpmss.ko
     insmod /system/lib/modules/xt_TCPMSS.ko
-    insmod /system/lib/modules/iptable_mangle.ko
     insmod /system/lib/modules/xt_multiport.ko
     insmod /system/lib/modules/xt_quota2.ko
     insmod /system/lib/modules/xt_owner2.ko
@@ -326,10 +329,10 @@ service wpa_supplicant /system/bin/wpa_supplicant -Dtiwlan0 -itiwlan0 -c/data/mi
     socket wpa_tiwlan0 dgram 660 wifi wifi
     disabled
     oneshot
-service hostapd /system/bin/logwrapper.bin /system/bin/hostapd -d /data/misc/wifi/hostapd.conf
+service hostap_netd /system/bin/hostap -d /data/misc/wifi/hostapd.conf
     class main
     group wifi system inet net_admin
-    socket wpa_tiap0 dgram 660 wifi wifi
+    socket tiap0 dgram 660 wifi wifi
     disabled
     oneshot
 

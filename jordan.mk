@@ -69,7 +69,7 @@ PRODUCT_PACKAGES += \
 	libaudiohw_legacy audio.primary.jordan \
 
 # ICS graphics
-PRODUCT_PACKAGES += libGLESv2 libEGL libGLESv1_CM
+PRODUCT_PACKAGES += libGLESv2 libEGL libGLESv1_CM libgtest
 
 # TO FIX for ICS
 PRODUCT_PACKAGES += gralloc.default hwcomposer.default

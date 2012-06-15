@@ -14,7 +14,7 @@ rm -f $REPACK/ota/system/app/VideoEditor.apk
 rm -f $REPACK/ota/system/media/video/*.480p.mp4
 
 # Smaller and smoother bootanimation
-cp -f $DEVICE_TOP/prebuilt/bootanimation.zip $REPACK/ota/system/media/bootanimation.zip
+#cp -f $DEVICE_TOP/prebuilt/bootanimation.zip $REPACK/ota/system/media/bootanimation.zip
 
 # Apk required, (forbidden in product copy files in ics)
 cp -f $VENDOR_TOP/app/* $REPACK/ota/system/app/

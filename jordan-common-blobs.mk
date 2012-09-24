@@ -42,7 +42,6 @@ PRODUCT_COPY_FILES += \
 	${DEVICE_PREBUILT}/etc/wifi/wpa_supplicant.conf:system/etc/wifi/wpa_supplicant.conf \
 	${DEVICE_PREBUILT}/etc/gpsconfig.xml:system/etc/gpsconfig.xml \
 	${DEVICE_PREBUILT}/etc/location.cfg:system/etc/location.cfg \
-	${DEVICE_PATH}/media_profiles.xml:system/etc/media_profiles.xml \
 	${DEVICE_PATH}/modules/modules.alias:system/lib/modules/modules.alias \
 	${DEVICE_PATH}/modules/modules.dep:system/lib/modules/modules.dep \
 

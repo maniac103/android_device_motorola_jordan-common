@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-ifeq ($(TARGET_USE_JORDAN_COMMON),true)
+ifneq ($(filter jordan, $(TARGET_BOOTLOADER_BOARD_NAME)),)
 include $(all-subdir-makefiles)
 endif

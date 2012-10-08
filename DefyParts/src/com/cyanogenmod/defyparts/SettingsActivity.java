@@ -196,7 +196,6 @@ public class SettingsActivity extends PreferenceActivity
                 return false;
             }
         } else if (preference == bootmenuPinPref) {
-	    Log.d(TAG, "pin changed -> " + newValue);
             writeValueToFile(FILE_BOOTMENU_PIN, (String) newValue);
         } else if (preference == kinetoPref) {
             final Boolean value = (Boolean) newValue;

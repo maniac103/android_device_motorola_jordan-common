@@ -27,7 +27,8 @@ unknown
     <int name="defaultMMSMessagesPerThread">20</int>
     <int name="minMessageCountPerThread">10</int>
     <int name="maxMessageCountPerThread">5000</int>
-    <string name="uaProfUrl">http://www.google.com/oha/rdf/ua-profile-kila.xml</string>
+    <string name="userAgent">MB525</string>
+    <string name="uaProfUrl">http://uaprof.motorola.com/phoneconfig/MotoMB525/profile/MotoMB525.rdf</string>
     <int name="recipientLimit">-1</int>
     <int name="smsToMmsTextThreshold">4</int>
 </mms_config>

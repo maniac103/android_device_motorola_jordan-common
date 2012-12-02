@@ -24,6 +24,9 @@
         </receiver>
 
         <service android:name=".LtoDownloadService" />
+
+        <service android:name=".BpPanicHandlerService" />
+
     </application>
 
 </manifest>

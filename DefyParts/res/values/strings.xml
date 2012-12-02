@@ -95,4 +95,7 @@
     <string name="lto_last_download_date_failure">Last download attempt: %1$s (Unsuccessful)</string>
     <string name="lto_downloading_data">Downloading data\u2026 (%1$s%%)</string>
     <string name="never">Never</string>
+
+    <string name="modem_error">Telephony problem detected</string>
+    <string name="touch_to_reboot">Touch to reboot</string>
 </resources>

@@ -94,4 +94,7 @@
     <string name="lto_last_download_date_failure">Letzter Downloadversuch: %1$s (Nicht erfolgreich)</string>
     <string name="lto_downloading_data">Daten werden heruntergeladen\u2026 (%1$s%%)</string>
     <string name="never">Nie</string>
+
+    <string name="modem_error">Modem-Problem</string>
+    <string name="touch_to_reboot">Berühren, um neu zu starten</string>
 </resources>

@@ -185,7 +185,7 @@ service gkisystem /system/bin/gkisystem
     socket gpshal_socket stream 660 radio system
     socket opprofdaemon stream 660 radio system
     group radio system
-    on restart exec /system/bin/gki_pd_notifier
+    onrestart exec /system/bin/gki_pd_notifier
 service battd /system/bin/battd
     socket battdsock stream 660 root system
     user root

@@ -46,12 +46,5 @@ PRODUCT_COPY_FILES += \
 	${DEVICE_PREBUILT}/etc/wifi/wpa_supplicant.conf:system/etc/wifi/wpa_supplicant.conf \
 	${DEVICE_PREBUILT}/etc/gpsconfig.xml:system/etc/gpsconfig.xml \
 	${DEVICE_PREBUILT}/etc/location.cfg:system/etc/location.cfg \
-	${DEVICE_PATH}/modules/modules.alias:system/lib/modules/modules.alias \
-	${DEVICE_PATH}/modules/modules.dep:system/lib/modules/modules.dep \
-
-# copy all of our kernel modules under the "modules" directory to system/lib/modules
-PRODUCT_COPY_FILES += $(shell test -d device/motorola/jordan-common/modules && \
-	find device/motorola/jordan-common/modules -name '*.ko' \
-	-printf '%p:system/lib/modules/%f ')
 
 #end of jordan-blobs.mk

@@ -126,16 +126,6 @@ PRODUCT_TAGS += dalvik.gc.type-precise
 PRODUCT_COPY_FILES += \
 	device/motorola/jordan-common/vold.fstab:system/etc/vold.fstab
 
-# copy all of our kernel modules under the "modules" directory to system/lib/modules
-PRODUCT_COPY_FILES += $(shell test -d device/motorola/jordan-common/modules && \
-	find device/motorola/jordan-common/modules -name '*.ko' \
-	-printf '%p:system/lib/modules/%f ')
-
-# Prebuilt boot.img
-LOCAL_KERNEL := device/motorola/jordan-common/kernel
-PRODUCT_COPY_FILES += \
-	$(LOCAL_KERNEL):kernel
-
 # Blobs
 $(call inherit-product, device/motorola/jordan-common/jordan-common-blobs.mk)
 $(call inherit-product, device/motorola/jordan-common/bootmenu/bootmenu.mk)

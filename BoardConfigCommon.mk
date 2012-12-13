@@ -118,3 +118,38 @@ BOARD_NEVER_UMOUNT_SYSTEM := true
 
 # Jordan need 2nd-init binary from motorola common
 TARGET_NEEDS_MOTOROLA_HIJACK := true
+
+##### Kernel stuff #####
+#TARGET_MODULES_WIFI_SOURCE := "system/wlan/ti/wilink_6_1/platforms/os/linux/"
+#TARGET_MODULES_AP_SOURCE := "system/wlan/ti/WiLink_AP/platforms/os/linux/"
+TARGET_MODULES_WIFI_SOURCE := "hardware/ti/wlan/wl1271/platforms/os/linux/"
+TARGET_MODULES_AP_SOURCE := "hardware/ti/wlan/wl1271_softAP/platforms/os/linux/"
+
+API_MAKE := \
+	make PREFIX=$(ANDROID_BUILD_TOP)/$(TARGET_OUT_INTERMEDIATES)/kernel_intermediates/build \
+	ARCH=arm \
+	CROSS_COMPILE=$(ANDROID_BUILD_TOP)/prebuilt/$(HOST_PREBUILT_TAG)/toolchain/arm-eabi-4.4.3/bin/arm-eabi- \
+	HOST_PLATFORM=zoom2 \
+	KERNEL_DIR=$(ANDROID_BUILD_TOP)/$(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ \
+
+ext_modules:
+	$(API_MAKE) clean -C $(ANDROID_BUILD_TOP)/$(TARGET_MODULES_WIFI_SOURCE)
+	$(API_MAKE) clean -C $(ANDROID_BUILD_TOP)/$(TARGET_MODULES_AP_SOURCE)
+	$(API_MAKE) -C $(TARGET_MODULES_WIFI_SOURCE) HOST_PLATFORM=zoom2 KERNEL_DIR=$(KERNEL_OUT)
+	$(API_MAKE) -C $(TARGET_MODULES_AP_SOURCE) HOST_PLATFORM=zoom2 KERNEL_DIR=$(KERNEL_OUT)
+	mv $(TARGET_MODULES_WIFI_SOURCE)/tiwlan_drv.ko $(KERNEL_MODULES_OUT)
+	mv $(TARGET_MODULES_AP_SOURCE)/tiap_drv.ko $(KERNEL_MODULES_OUT)
+	arm-eabi-strip --strip-unneeded $(KERNEL_MODULES_OUT)/*.ko
+
+hboot:
+	mkdir -p $(PRODUCT_OUT)/system/bootmenu/2nd-boot
+	echo "$(BOARD_KERNEL_CMDLINE)" > $(PRODUCT_OUT)/system/bootmenu/2nd-boot/cmdline
+	$(API_MAKE) -C $(ANDROID_BUILD_TOP)/device/motorola/jordan-common/hboot/hboot
+	mv $(ANDROID_BUILD_TOP)/device/motorola/jordan-common/hboot/hboot/hboot.bin $(PRODUCT_OUT)/system/bootmenu/2nd-boot/
+	make clean -C $(ANDROID_BUILD_TOP)/device/motorola/jordan-common/hboot/hboot
+
+TARGET_KERNEL_SOURCE := $(ANDROID_BUILD_TOP)/kernel/motorola/jordan
+TARGET_KERNEL_CUSTOM_TOOLCHAIN := arm-eabi-4.4.3
+TARGET_KERNEL_CONFIG := mapphone_defconfig
+BOARD_KERNEL_CMDLINE := console=/dev/null mem=498M init=/init ip=off brdrev=P3A omapfb.vram=0:4M
+TARGET_KERNEL_MODULES := ext_modules hboot

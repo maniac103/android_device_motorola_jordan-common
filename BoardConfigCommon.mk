@@ -120,10 +120,10 @@ BOARD_NEVER_UMOUNT_SYSTEM := true
 TARGET_NEEDS_MOTOROLA_HIJACK := true
 
 ##### Kernel stuff #####
-#TARGET_MODULES_WIFI_SOURCE := "system/wlan/ti/wilink_6_1/platforms/os/linux/"
-#TARGET_MODULES_AP_SOURCE := "system/wlan/ti/WiLink_AP/platforms/os/linux/"
-TARGET_MODULES_WIFI_SOURCE := "hardware/ti/wlan/wl1271/platforms/os/linux/"
-TARGET_MODULES_AP_SOURCE := "hardware/ti/wlan/wl1271_softAP/platforms/os/linux/"
+TARGET_MODULES_WIFI_SOURCE := "system/wlan/ti/wilink_6_1/platforms/os/linux/"
+TARGET_MODULES_AP_SOURCE := "system/wlan/ti/WiLink_AP/platforms/os/linux/"
+#TARGET_MODULES_WIFI_SOURCE := "hardware/ti/wlan/wl1271/platforms/os/linux/"
+#TARGET_MODULES_AP_SOURCE := "hardware/ti/wlan/wl1271_softAP/platforms/os/linux/"
 
 API_MAKE := \
 	make PREFIX=$(ANDROID_BUILD_TOP)/$(TARGET_OUT_INTERMEDIATES)/kernel_intermediates/build \

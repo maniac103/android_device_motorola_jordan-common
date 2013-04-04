@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.os.SystemProperties;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -27,6 +28,8 @@ public class BpPanicHandlerService extends Service {
 
     static final String KEY_NEED_REBOOT_NOTICE = "need_bppanic_reboot_notice";
 
+    private static final String PROP_AUTO_REBOOT = "persist.sys.bppanic_reboot";
+
     private static final long SNOOZE_DELAY = 5 * 60 * 1000; /* 5 minutes */
     private static final long REBOOT_TIMEOUT = 60 * 1000; /* 1 minute */
 
@@ -37,6 +40,7 @@ public class BpPanicHandlerService extends Service {
     private Intent mNotifyIntent;
     private PendingIntent mTimerUpdateIntent;
     private PendingIntent mPanicHandleIntent;
+    private boolean mDoTimeout;
 
     @Override
     public void onCreate() {
@@ -66,8 +70,11 @@ public class BpPanicHandlerService extends Service {
             if (mNotification == null) {
                 mNotification = createNotification();
             }
-            mRebootTimeout = System.currentTimeMillis() + REBOOT_TIMEOUT;
-            updateTimeout();
+            mDoTimeout = SystemProperties.getBoolean(PROP_AUTO_REBOOT, true);
+            if (mDoTimeout) {
+                mRebootTimeout = System.currentTimeMillis() + REBOOT_TIMEOUT;
+                updateTimeout();
+            }
             startActivity(mNotifyIntent);
             startForeground(NOTIFICATION_ID, mNotification);
         } else if (TextUtils.equals(action, ACTION_REBOOT)) {
@@ -78,7 +85,9 @@ public class BpPanicHandlerService extends Service {
         } else if (TextUtils.equals(action, ACTION_DISMISS)) {
             cancelTimeout();
         } else if (TextUtils.equals(action, ACTION_TIMER_UPDATE)) {
-            updateTimeout();
+            if (mDoTimeout) {
+                updateTimeout();
+            }
         }
 
         return START_STICKY;
